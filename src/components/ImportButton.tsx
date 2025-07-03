@@ -1,14 +1,13 @@
 'use client'
 
 import React, { useState } from 'react'
-import { getPayload } from 'payload'
-import config from '@/payload.config'
+import type { ImportResult } from '@/types/interfaces'
 
 interface ImportButtonProps {
   collection?: string
   className?: string
   children?: React.ReactNode
-  onSuccess?: (result: any) => void
+  onSuccess?: (result: ImportResult) => void
   onError?: (error: Error) => void
 }
 

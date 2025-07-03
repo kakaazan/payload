@@ -20,17 +20,28 @@ import { searchPlugin } from '@payloadcms/plugin-search'
 // *** New: Import the import-export plugin ***
 import { importExportPlugin } from '@payloadcms/plugin-import-export'
 
+// Import types
+import type { 
+  LexicalContent, 
+  LexicalNode, 
+  VideoDocument, 
+  CategoryDocument, 
+  TagDocument,
+  SearchDocument
+} from './types/interfaces'
+import { isLexicalContent } from './types/interfaces'
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 // --- Utility function to extract plain text from Lexical rich text ---
-const extractPlainText = (content: any): string => {
+const extractPlainText = (content: LexicalContent | string | null | undefined): string => {
   if (!content || typeof content !== 'object') {
     return ''
   }
 
-  if (content.root && Array.isArray(content.root.children)) {
-    const extractTextFromNode = (node: any): string => {
+  if (isLexicalContent(content) && Array.isArray(content.root.children)) {
+    const extractTextFromNode = (node: LexicalNode): string => {
       if (!node || typeof node !== 'object') {
         return ''
       }
@@ -39,7 +50,7 @@ const extractPlainText = (content: any): string => {
       }
       if (Array.isArray(node.children)) {
         return node.children
-          .map((child: any) => extractTextFromNode(child))
+          .map((child: LexicalNode) => extractTextFromNode(child))
           .join(' ')
           .replace(/\s+/g, ' ')
           .trim()
@@ -48,7 +59,7 @@ const extractPlainText = (content: any): string => {
     }
 
     return content.root.children
-      .map((child: any) => extractTextFromNode(child))
+      .map((child: LexicalNode) => extractTextFromNode(child))
       .join(' ')
       .replace(/\s+/g, ' ')
       .trim()
@@ -114,7 +125,7 @@ export default buildConfig({
 
       beforeSync: ({ originalDoc, searchDoc }) => {
         const collection = searchDoc.doc.relationTo
-        let newSearchDoc = { ...searchDoc }
+        const newSearchDoc = { ...searchDoc }
 
         // Populate originalDocID for all relevant collections
         ;(newSearchDoc as any).originalDocID = originalDoc.id ? String(originalDoc.id) : null
@@ -124,11 +135,7 @@ export default buildConfig({
           newSearchDoc.title = (originalDoc as any).title
 
           const originalDescription = (originalDoc as any).description
-          if (
-            typeof originalDescription === 'object' &&
-            originalDescription !== null &&
-            'root' in originalDescription
-          ) {
+          if (isLexicalContent(originalDescription)) {
             newSearchDoc.description = extractPlainText(originalDescription)
           } else if (typeof originalDescription === 'string') {
             newSearchDoc.description = originalDescription
@@ -145,11 +152,11 @@ export default buildConfig({
           }
 
           // --- Updated: Populate Thumbnail URL (from direct text field) ---
-          const videoThumbnailUrl = (originalDoc as any).thumbnailurl // Use original field name
+          const videoThumbnailUrl = (originalDoc as any).thumbnailurl
           if (typeof videoThumbnailUrl === 'string') {
             ;(newSearchDoc as any).thumbnailURL = videoThumbnailUrl
           } else {
-            ;(newSearchDoc as any).thumbnailURL = null // Or a default placeholder URL
+            ;(newSearchDoc as any).thumbnailURL = null
           }
 
           // --- Updated: Populate Multiple Categories ---
@@ -158,18 +165,9 @@ export default buildConfig({
 
           if (Array.isArray(originalCategories)) {
             originalCategories.forEach((cat: any) => {
-              if (typeof cat === 'object' && cat.id) {
+              if (typeof cat === 'object' && cat && 'id' in cat && 'name' in cat) {
                 // If category object is populated
                 if (cat.name) categoryNames.push(cat.name)
-              } else if (typeof cat === 'string') {
-                // If just category ID string - note: this `beforeSync` doesn't fetch,
-                // so if only IDs are available, you'd need to fetch them here
-                // if you want the names for search. For simple string IDs, this is fine.
-                // For this scenario, if `originalCategories` were just IDs, you'd need
-                // an async operation here to get names.
-                // However, if your 'categories' field in 'videos' collection is 'relationship'
-                // and 'hasMany: true' and depth is configured to populate 'name',
-                // then 'cat.name' would be available if it's populated.
               }
             })
           }

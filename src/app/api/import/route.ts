@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
+import type { CollectionData, ImportItemResult } from '@/types/interfaces'
 
 export async function POST(request: NextRequest) {
   try {
@@ -46,10 +47,10 @@ export async function POST(request: NextRequest) {
 
     // Parse JSON
     const buffer = Buffer.from(await file.arrayBuffer())
-    let data: any
+    let data: CollectionData[]
     try {
       data = JSON.parse(buffer.toString())
-    } catch (err) {
+    } catch (_err) {
       return NextResponse.json(
         { error: 'Invalid JSON file.' },
         { status: 400 }
@@ -63,7 +64,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Import each item
-    const results = []
+    const results: ImportItemResult[] = []
     let successCount = 0
     let errorCount = 0
     for (const [i, item] of data.entries()) {
@@ -75,8 +76,9 @@ export async function POST(request: NextRequest) {
         })
         results.push({ index: i, status: 'success', id: created.id })
         successCount++
-      } catch (err: any) {
-        results.push({ index: i, status: 'error', error: err.message })
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+        results.push({ index: i, status: 'error', error: errorMessage })
         errorCount++
       }
     }
