@@ -1,0 +1,17 @@
+{
+  "buildCommand": "pnpm build",
+  "installCommand": "pnpm install",
+  "framework": "nextjs",
+  "functions": {
+    "src/app/api/**/*.ts": {
+      "maxDuration": 30
+    },
+    "src/app/(payload)/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "PAYLOAD_SECRET": "@payload_secret",
+    "DATABASE_URI": "@database_uri"
+  }
+} 
