@@ -9,9 +9,5 @@
     "src/app/(payload)/api/**/*.ts": {
       "maxDuration": 30
     }
-  },
-  "env": {
-    "PAYLOAD_SECRET": "@payload_secret",
-    "DATABASE_URI": "@database_uri"
   }
 } 

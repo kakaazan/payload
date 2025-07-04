@@ -1,9 +1,10 @@
 import type { CollectionConfig } from 'payload'
+import { canReadWithApiKeyOrAdmin } from '@/utils/canReadWithApiKeyOrAdmin'
 
 export const Media: CollectionConfig = {
   slug: 'media',
   access: {
-    read: () => true,
+    read: canReadWithApiKeyOrAdmin,
   },
   fields: [
     {

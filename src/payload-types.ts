@@ -222,23 +222,24 @@ export interface Search {
   id: number;
   title?: string | null;
   priority?: number | null;
-  doc:
-    | {
-        relationTo: 'videos';
-        value: number | Video;
-      }
-    | {
-        relationTo: 'categories';
-        value: number | Category;
-      }
-    | {
-        relationTo: 'tags';
-        value: number | Tag;
-      };
+  doc: {
+    relationTo: 'videos';
+    value: number | Video;
+  };
+  searchContent?: string | null;
   excerpt?: string | null;
   originalDocID?: string | null;
   thumbnailURL?: string | null;
   categoryNames?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  tagNames?:
     | {
         [k: string]: unknown;
       }
@@ -541,10 +542,12 @@ export interface SearchSelect<T extends boolean = true> {
   title?: T;
   priority?: T;
   doc?: T;
+  searchContent?: T;
   excerpt?: T;
   originalDocID?: T;
   thumbnailURL?: T;
   categoryNames?: T;
+  tagNames?: T;
   updatedAt?: T;
   createdAt?: T;
 }

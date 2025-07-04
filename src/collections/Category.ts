@@ -1,9 +1,10 @@
 import type { CollectionConfig } from 'payload'
+import { canReadWithApiKeyOrAdmin } from '@/utils/canReadWithApiKeyOrAdmin'
 
 export const Category: CollectionConfig = {
   slug: 'categories',
   access: {
-    read: () => true,
+    read: canReadWithApiKeyOrAdmin,
   },
   admin: {
     useAsTitle: 'name',
