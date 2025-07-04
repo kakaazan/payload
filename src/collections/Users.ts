@@ -30,11 +30,10 @@ export const Users: CollectionConfig = {
             const newRole = data?.role;
 
             const isChangingFromAdmin = oldRole === 'admin' && newRole !== 'admin';
-            const isCreatingAdmin = isCreating && newRole === 'admin';
-
-            if (isCreatingAdmin) {
-              throw new Error('You cannot manually create an admin user.');
-            }
+            // Allow admin creation
+            // if (isCreatingAdmin) {
+            //   throw new Error('You cannot manually create an admin user.');
+            // }
 
             if (isChangingFromAdmin) {
               throw new Error('You cannot change the role of an admin user.');
