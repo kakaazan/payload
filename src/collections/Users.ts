@@ -1,13 +1,12 @@
 // src/collections/Users.ts
 
 import type { CollectionConfig } from 'payload';
-import { canReadWithApiKeyOrAdmin } from '@/utils/canReadWithApiKeyOrAdmin';
 
 export const Users: CollectionConfig = {
   slug: 'users',
   auth: true,
   access: {
-    read: canReadWithApiKeyOrAdmin,
+    read: () => true,
   },
   admin: {
     useAsTitle: 'email',

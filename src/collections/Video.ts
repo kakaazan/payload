@@ -1,10 +1,9 @@
 import type { CollectionConfig } from 'payload'
-import { canReadWithApiKeyOrAdmin } from '@/utils/canReadWithApiKeyOrAdmin'
 
 export const Video: CollectionConfig = {
   slug: 'videos',
   access: {
-    read: canReadWithApiKeyOrAdmin,
+    read: () => true,
   },
   admin: {
     useAsTitle: 'title',
