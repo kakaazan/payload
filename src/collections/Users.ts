@@ -22,27 +22,6 @@ export const Users: CollectionConfig = {
         { label: 'User', value: 'user' },
         { label: 'Admin', value: 'admin' },
       ],
-      hooks: {
-        beforeChange: [
-          ({ data, originalDoc, req }) => {
-            const isCreating = !originalDoc;
-            const oldRole = originalDoc?.role;
-            const newRole = data?.role;
-
-            const isChangingFromAdmin = oldRole === 'admin' && newRole !== 'admin';
-            // Allow admin creation
-            // if (isCreatingAdmin) {
-            //   throw new Error('You cannot manually create an admin user.');
-            // }
-
-            if (isChangingFromAdmin) {
-              throw new Error('You cannot change the role of an admin user.');
-            }
-
-            return data;
-          },
-        ],
-      },
     },
   ],
 };
